@@ -174,6 +174,10 @@ saves the status of the process
 
 reads the status of all worker processes that are alive and that have called update() more than once.  Returned value is a hashref with process ids as keys and the statuses of each processes as corresponding values.
 
+=head2 cleanup()
+
+remove obsolete status files found in base_dir.  The files are normally removed upon the termination of worker process, however they might be left unremoved if the worker process was killed for some reason.  The detection and removal of the obsolete status files is performed by read_all() as well.
+
 =head1 SEE ALSO
 
 L<IPC::ScoreBoard>
