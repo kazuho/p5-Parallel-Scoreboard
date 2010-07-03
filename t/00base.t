@@ -1,6 +1,9 @@
-use Test::More tests => 12;
+use strict;
+use warnings;
 
 use File::Temp qw(tempdir);
+
+use Test::More tests => 12;
 
 use_ok('Parallel::Scoreboard');
 
