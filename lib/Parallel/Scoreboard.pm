@@ -42,6 +42,11 @@ sub DESTROY {
 sub update {
     my ($self, $status) = @_;
     # open file at the first invocation (tmpfn => lock => rename)
+    if ($self->{fh} && $self->{pid_for_fh} != $$) {
+        # fork? close but do not unlock
+        close $self->{fh};
+        undef $self->{fh};
+    }
     unless ($self->{fh}) {
         my $fn = $self->_build_filename();
         open my $fh, '>', "$fn.tmp"
@@ -52,6 +57,7 @@ sub update {
         rename "$fn.tmp", $fn
             or die "failed to rename file:$fn.tmp to $fn:$!";
         $self->{fh} = $fh;
+        $self->{pid_for_fh} = $fh;
     }
     # write to file with size of the status and its checksum
     seek $self->{fh}, SEEK_SET, 0

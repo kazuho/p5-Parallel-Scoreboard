@@ -3,7 +3,7 @@ use warnings;
 
 use File::Temp qw(tempdir);
 
-use Test::More tests => 12;
+use Test::More tests => 15;
 
 use_ok('Parallel::Scoreboard');
 
@@ -15,6 +15,9 @@ my $sb = Parallel::Scoreboard->new(
     base_dir => $base_dir,
 );
 ok($sb, 'instantiation');
+
+# save my status (to check the behavior of fork-after-status-update)
+$sb->update('me manager');
 
 # create worker procs (that incr the status for each SIGUSR1)
 my @workers;
@@ -40,7 +43,8 @@ for (0..1) {
 # check status
 sleep 1;
 my $stats = $sb->read_all();
-is(scalar keys %$stats, 2, 'has corrent num of pids');
+is(scalar keys %$stats, 3, 'has corrent num of pids');
+is($stats->{$$}, 'me manager', 'check my status');
 is($stats->{$workers[0]}, 0, 'check counter');
 is($stats->{$workers[1]}, 0, 'check counter 2');
 
@@ -48,7 +52,8 @@ is($stats->{$workers[1]}, 0, 'check counter 2');
 kill 'USR1', $workers[0];
 sleep 1;
 $stats = $sb->read_all();
-is(scalar keys %$stats, 2, 'has corrent num of pids');
+is(scalar keys %$stats, 3, 'has corrent num of pids');
+is($stats->{$$}, 'me manager', 'check my status');
 is($stats->{$workers[0]}, 1, 'check counter 3');
 is($stats->{$workers[1]}, 0, 'check counter 4');
 
@@ -57,7 +62,8 @@ kill 'TERM', $workers[1];
 sleep 1;
 ok(-e "$base_dir/status_$workers[1]", 'status file should still exist');
 $stats = $sb->read_all();
-is(scalar keys %$stats, 1, 'has corrent num of pids');
+is($stats->{$$}, 'me manager', 'check my status');
+is(scalar keys %$stats, 2, 'has corrent num of pids');
 is($stats->{$workers[0]}, 1, 'check counter 5');
 ok(! -e "$base_dir/status_$workers[1]", 'status file should have been removed');
 
