@@ -7,7 +7,7 @@ use POSIX qw(:fcntl_h);
 use strict;
 use warnings;
 
-our $VERSION = 0.01;
+our $VERSION = 0.02;
 
 sub new {
     my $klass = shift;
@@ -114,7 +114,7 @@ sub _for_all {
             or next;
         my $pid = $1;
         # ignore files removed after glob but before open
-        open my $fh, '<', $fn
+        open my $fh, '+<', $fn
             or next;
         # check if the file is still opened by the owner process using flock
         if ($pid != $$ && flock $fh, LOCK_EX | LOCK_NB) {
