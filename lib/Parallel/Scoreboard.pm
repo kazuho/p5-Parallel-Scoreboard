@@ -3,6 +3,7 @@ package Parallel::Scoreboard;
 use Class::Accessor::Lite;
 use Digest::MD5 qw(md5);
 use Fcntl qw(:flock);
+use IO::Handle;
 use POSIX qw(:fcntl_h);
 
 use strict;
