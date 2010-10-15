@@ -1,8 +1,7 @@
 package Parallel::Scoreboard::PSGI::App::JSON;
 
 use Class::Accessor::Lite;
-use HTML::Entities;
-use JSON;
+use JSON qw(encode_json decode_json);
 use Parallel::Scoreboard;
 
 use strict;
@@ -26,9 +25,11 @@ sub to_app {
     my $self = shift;
     return sub {
         my $status = $self->scoreboard->read_all;
-        for my $pid (%$status) {
-            $status->{pid} = decode_json($status->{pid})
-                if $status->{$pid} =~ /^[\{\[]/;
+        for my $s (values %$status) {
+            # try to decode status (or if fails, leave it as a string)
+            eval {
+                $s = decode_json($s);
+            };
         }
         return [
             200,
