@@ -1,11 +1,14 @@
 package Parallel::Scoreboard;
 
+use Class::Accessor::Lite;
 use Digest::MD5 qw(md5);
 use Fcntl qw(:flock);
 use POSIX qw(:fcntl_h);
 
 use strict;
 use warnings;
+
+Class::Accessor::Lite->mk_accessors(qw(base_dir));
 
 our $VERSION = 0.02;
 
