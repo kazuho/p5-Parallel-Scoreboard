@@ -144,13 +144,13 @@ __END__
 
 =head1 NAME
 
-Parallel::Scoreboard - A scoreboard for monitoring status of many processes
+Parallel::Scoreboard - a scoreboard for monitoring status of many processes
 
 =head1 SYNOPSIS
 
   use Parallel::Scoreboard;
 
-  my $scoreboard = new Parallel::Scoreboard(
+  my $scoreboard = Parallel::Scoreboard->new(
       base_dir => '/tmp/my_scoreboard'
   ...
 

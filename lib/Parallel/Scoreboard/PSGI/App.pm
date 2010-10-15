@@ -68,3 +68,37 @@ EOT
 }
 
 1;
+__END__
+
+=head1 NAME
+
+Parallel::Scoreboard::PSGI::App - a simple PSGI app for monitoring the output of Parallel::Scoreboard
+
+=head1 SYNOPSIS
+
+  use Parallel::Scoreboard;
+  use Parallel::Scoreboard::PSGI::App;
+  
+  my $scoreboard = Parallel::Scoreboard->new(
+      base_dir => '/tmp/my_scorebooard',
+  );
+  # return psgi app
+  Parallel::Scoreboard::PSGI::App->new(
+      scoreboard => $scoreboard,
+  )->to_app;
+
+=head1 SEE ALSO
+
+L<Parallel::Scoreboard>
+L<Parallel::Scoreboard::PSGI::App::JSON>
+L<PSGI>
+
+=head1 AUTHOR
+
+Kazuho Oku E<lt>kazuhooku gmail.comE<gt>
+
+=head1 LICENSE
+
+This program is free software, you can redistribute it and/or modify it under the same terms as Perl 5.10.
+
+=cut
