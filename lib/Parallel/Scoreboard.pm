@@ -46,7 +46,7 @@ sub DESTROY {
 sub update {
     my ($self, $status) = @_;
     # open file at the first invocation (tmpfn => lock => rename)
-    if ($self->{fh} && $self->{pid_for_fh} != $$) {
+    if ($self->{fh} && $self->{id_for_fh} ne $self->id) {
         # fork? close but do not unlock
         close $self->{fh};
         undef $self->{fh};
@@ -61,7 +61,7 @@ sub update {
         rename "$fn.tmp", $fn
             or die "failed to rename file:$fn.tmp to $fn:$!";
         $self->{fh} = $fh;
-        $self->{pid_for_fh} = $fh;
+        $self->{id_for_fh} = $self->id;
     }
     # write to file with size of the status and its checksum
     seek $self->{fh}, SEEK_SET, 0
@@ -78,7 +78,7 @@ sub read_all {
     my %ret;
     $self->_for_all(
         sub {
-            my ($pid, $fh) = @_;
+            my ($id, $fh) = @_;
             # detect collision using md5
             for (1..10) {
                 seek $fh, SEEK_SET, 0
@@ -94,11 +94,11 @@ sub read_all {
                 next
                     if md5($status) ne $md5;
                 # have read correct data, save and return
-                $ret{$pid} = $status;
+                $ret{$id} = $status;
                 return;
             }
             # failed to read data in 10 consecutive attempts, bug?
-            warn "failed to read status of pid:$pid, skipping";
+            warn "failed to read status of pid:$id, skipping";
         }
     );
     \%ret;
@@ -109,19 +109,23 @@ sub cleanup {
     $self->_for_all(sub {});
 }
 
+sub filename_to_id {
+    my ($self, $filename) = @_;
+    my ($id) = $filename =~ m|/status_(\d+)$| or return;
+    return $id;
+}
+
 sub _for_all {
     my ($self, $cb) = @_;
     my @files = glob "$self->{base_dir}/status_*";
     for my $fn (@files) {
         # obtain pid from filename (or else ignore)
-        $fn =~ m|/status_(\d+)$|
-            or next;
-        my $pid = $1;
+        my $id = $self->filename_to_id($fn) or next;
         # ignore files removed after glob but before open
         open my $fh, '+<', $fn
             or next;
         # check if the file is still opened by the owner process using flock
-        if ($pid != $$ && flock $fh, LOCK_EX | LOCK_NB) {
+        if ($id ne $self->id && flock $fh, LOCK_EX | LOCK_NB) {
             # the owner has died, remove status file
             close $fh;
             unlink $fn
@@ -129,15 +133,20 @@ sub _for_all {
             next;
         }
         # invoke
-        $cb->($pid, $fh);
+        $cb->($id, $fh);
         # close
         close $fh;
     }
 }
 
+sub id {
+    my $self = shift;
+    return $$;
+}
+
 sub _build_filename {
     my $self = shift;
-    return "$self->{base_dir}/status_$$";
+    return "$self->{base_dir}/status_" . $self->id;
 }
 
 1;
@@ -187,6 +196,19 @@ reads the status of all worker processes that are alive and that have called upd
 =head2 cleanup()
 
 remove obsolete status files found in base_dir.  The files are normally removed upon the termination of worker process, however they might be left unremoved if the worker process was killed for some reason.  The detection and removal of the obsolete status files is performed by read_all() as well.
+
+=head2 id()
+
+The id this scoreboard will use when storing its status.  By default, uses C<$$>.
+
+Subclasses may override this to use identifiers other than pids.
+
+=head2 filename_to_id()
+
+Given a filename, return an id if it contains one.  By default, looks for C<< /status_(\d+)$ >>.
+
+If you override C<id> to return something other than an integer, you'll need to
+override this too.
 
 =head1 SEE ALSO
 

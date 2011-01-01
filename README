@@ -1,11 +1,11 @@
 NAME
-    Parallel::Scoreboard - A scoreboard for monitoring status of many
+    Parallel::Scoreboard - a scoreboard for monitoring status of many
     processes
 
 SYNOPSIS
       use Parallel::Scoreboard;
 
-      my $scoreboard = new Parallel::Scoreboard(
+      my $scoreboard = Parallel::Scoreboard->new(
           base_dir => '/tmp/my_scoreboard'
       ...
 
@@ -49,6 +49,19 @@ METHODS
     left unremoved if the worker process was killed for some reason. The
     detection and removal of the obsolete status files is performed by
     read_all() as well.
+
+  id()
+    The id this scoreboard will use when storing its status. By default,
+    uses $$.
+
+    Subclasses may override this to use identifiers other than pids.
+
+  filename_to_id()
+    Given a filename, return an id if it contains one. By default, looks for
+    "/status_(\d+)$".
+
+    If you override "id" to return something other than an integer, you'll
+    need to override this too.
 
 SEE ALSO
     IPC::ScoreBoard Proc::Scoreboard
