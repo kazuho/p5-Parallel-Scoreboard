@@ -1,17 +1,18 @@
 package Parallel::Scoreboard;
 
-use Class::Accessor::Lite;
+use strict;
+use warnings;
+
 use Digest::MD5 qw(md5);
 use Fcntl qw(:flock);
 use IO::Handle;
 use POSIX qw(:fcntl_h);
 
-use strict;
-use warnings;
-
-Class::Accessor::Lite->mk_accessors(qw(base_dir));
-
 our $VERSION = 0.02;
+
+use Class::Accessor::Lite (
+    ro => [ qw(base_dir worker_id) ],
+);
 
 sub new {
     my $klass = shift;
@@ -25,6 +26,7 @@ sub new {
     }
     # build object
     my $self = bless {
+        worker_id => sub { $$ },
         %args,
     }, $klass;
     # remove my status file, just in case
@@ -46,7 +48,8 @@ sub DESTROY {
 sub update {
     my ($self, $status) = @_;
     # open file at the first invocation (tmpfn => lock => rename)
-    if ($self->{fh} && $self->{pid_for_fh} != $$) {
+    my $id = $self->worker_id->();
+    if ($self->{fh} && $self->{id_for_fh} != $id) {
         # fork? close but do not unlock
         close $self->{fh};
         undef $self->{fh};
@@ -61,7 +64,7 @@ sub update {
         rename "$fn.tmp", $fn
             or die "failed to rename file:$fn.tmp to $fn:$!";
         $self->{fh} = $fh;
-        $self->{pid_for_fh} = $fh;
+        $self->{id_for_fh} = $id;
     }
     # write to file with size of the status and its checksum
     seek $self->{fh}, SEEK_SET, 0
@@ -78,7 +81,7 @@ sub read_all {
     my %ret;
     $self->_for_all(
         sub {
-            my ($pid, $fh) = @_;
+            my ($id, $fh) = @_;
             # detect collision using md5
             for (1..10) {
                 seek $fh, SEEK_SET, 0
@@ -94,11 +97,11 @@ sub read_all {
                 next
                     if md5($status) ne $md5;
                 # have read correct data, save and return
-                $ret{$pid} = $status;
+                $ret{$id} = $status;
                 return;
             }
             # failed to read data in 10 consecutive attempts, bug?
-            warn "failed to read status of pid:$pid, skipping";
+            warn "failed to read status of id:$id, skipping";
         }
     );
     \%ret;
@@ -113,15 +116,15 @@ sub _for_all {
     my ($self, $cb) = @_;
     my @files = glob "$self->{base_dir}/status_*";
     for my $fn (@files) {
-        # obtain pid from filename (or else ignore)
-        $fn =~ m|/status_(\d+)$|
+        # obtain id from filename (or else ignore)
+        $fn =~ m|/status_(.*)$|
             or next;
-        my $pid = $1;
+        my $id = $1;
         # ignore files removed after glob but before open
         open my $fh, '+<', $fn
             or next;
         # check if the file is still opened by the owner process using flock
-        if ($pid != $$ && flock $fh, LOCK_EX | LOCK_NB) {
+        if ($id ne $self->worker_id->() && flock $fh, LOCK_EX | LOCK_NB) {
             # the owner has died, remove status file
             close $fh;
             unlink $fn
@@ -129,7 +132,7 @@ sub _for_all {
             next;
         }
         # invoke
-        $cb->($pid, $fh);
+        $cb->($id, $fh);
         # close
         close $fh;
     }
@@ -137,7 +140,7 @@ sub _for_all {
 
 sub _build_filename {
     my $self = shift;
-    return "$self->{base_dir}/status_$$";
+    return "$self->{base_dir}/status_" . $self->worker_id->();
 }
 
 1;
@@ -145,7 +148,7 @@ __END__
 
 =head1 NAME
 
-Parallel::Scoreboard - a scoreboard for monitoring status of many processes
+Parallel::Scoreboard - a scoreboard for monitoring status of many workers
 
 =head1 SYNOPSIS
 
@@ -172,9 +175,17 @@ Unlike other similar modules, Parallel::Scoreboard is easy to use and has no lim
 
 =head1 METHODS
 
-=head2 new(base_dir => $base_dir)
+=head2 new(%args)
 
-instantiation.  Receives the directory name in which the scoreboard files will be stored.  The directory will be created if it does not exist already.
+instantiation.  Recognizes the following paramaters.  The parameters can be read using the read-only accessors with the same name.
+
+=head3 base_dir => $base_dir
+
+the directory name in which the scoreboard files will be stored.  The directory will be created if it does not exist already.  Mandatory parameter.
+
+=head3 worker_id => sub { ... }
+
+a subref that returns the id of the worker (if omitted, the module uses $$ (process id) to distinguish the workers)
 
 =head2 update($status)
 

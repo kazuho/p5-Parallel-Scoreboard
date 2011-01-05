@@ -6,7 +6,7 @@ all_from 'lib/Parallel/Scoreboard.pm';
 license 'perl';
 readme_from 'lib/Parallel/Scoreboard.pm';
 
-requires 'Class::Accessor::Lite' => 0.02;
+requires 'Class::Accessor::Lite' => 0.05;
 requires 'HTML::Entities';
 requires 'JSON';
 

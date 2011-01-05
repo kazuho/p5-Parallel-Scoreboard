@@ -1,11 +1,11 @@
 NAME
-    Parallel::Scoreboard - A scoreboard for monitoring status of many
-    processes
+    Parallel::Scoreboard - a scoreboard for monitoring status of many
+    workers
 
 SYNOPSIS
       use Parallel::Scoreboard;
 
-      my $scoreboard = new Parallel::Scoreboard(
+      my $scoreboard = Parallel::Scoreboard->new(
           base_dir => '/tmp/my_scoreboard'
       ...
 
@@ -30,10 +30,18 @@ DESCRIPTION
     process.
 
 METHODS
-  new(base_dir => $base_dir)
-    instantiation. Receives the directory name in which the scoreboard files
-    will be stored. The directory will be created if it does not exist
-    already.
+  new(%args)
+    instantiation. Recognizes the following paramaters. The parameters can
+    be read using the read-only accessors with the same name.
+
+   base_dir => $base_dir
+    the directory name in which the scoreboard files will be stored. The
+    directory will be created if it does not exist already. Mandatory
+    parameter.
+
+   worker_id => sub { ... }
+    a subref that returns the id of the worker (if omitted, the module uses
+    $$ (process id) to distinguish the workers)
 
   update($status)
     saves the status of the process
