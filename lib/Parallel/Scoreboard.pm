@@ -185,7 +185,7 @@ the directory name in which the scoreboard files will be stored.  The directory 
 
 =head3 worker_id => sub { ... }
 
-a subref that returns the id of the worker (if omitted, the module uses $$ (process id) to distinguish the workers)
+a subref that returns the id of the worker (if omitted, the module uses $$ (process id) to distinguish between the workers)
 
 =head2 update($status)
 
