@@ -1,5 +1,8 @@
 Revision history for Perl extension Parallel::Scoreboard
 
+0.03
+	added callback "worker_id" that can be used for distiguishing workers other than using pids
+
 0.02
 	fix incompatibility with Solaris (LOCK_EX not possible on read-only file handles)
 	scripts may now call fork(2) after calling Parallel::Scoreboard::update()

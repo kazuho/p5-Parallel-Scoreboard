@@ -41,7 +41,7 @@ METHODS
 
    worker_id => sub { ... }
     a subref that returns the id of the worker (if omitted, the module uses
-    $$ (process id) to distinguish the workers)
+    $$ (process id) to distinguish between the workers)
 
   update($status)
     saves the status of the process
