@@ -67,7 +67,7 @@ sub update {
         $self->{id_for_fh} = $id;
     }
     # write to file with size of the status and its checksum
-    seek $self->{fh}, SEEK_SET, 0
+    seek $self->{fh}, 0, SEEK_SET
         or die "seek failed:$!";
     print {$self->{fh}} (
         md5($status),
@@ -84,7 +84,7 @@ sub read_all {
             my ($id, $fh) = @_;
             # detect collision using md5
             for (1..10) {
-                seek $fh, SEEK_SET, 0
+                seek $fh, 0, SEEK_SET
                     or die "seek failed:$!";
                 my $data = do { local $/; join '', <$fh> };
                 # silently ignore if data is too short
