@@ -1,5 +1,10 @@
 Revision history for Perl extension Parallel::Scoreboard
 
+0.05
+        when cleaning up obsolete scoreboard files, ignore errors
+        when another process cleaned up the file at the same time
+        (Karen Etheridge)
+
 0.04
 	fix seek error (thanks to hirose31)
 	support non-numeric ids (thanks to hirose31)
