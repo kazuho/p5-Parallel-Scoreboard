@@ -14,4 +14,7 @@ test_requires 'File::Temp';
 test_requires 'Test::More';
 use_test_base;
 auto_include;
+
+repository 'git://github.com/kazuho/p5-Parallel-Scoreboard.git';
+
 WriteAll;
