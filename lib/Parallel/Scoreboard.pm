@@ -49,7 +49,7 @@ sub update {
     my ($self, $status) = @_;
     # open file at the first invocation (tmpfn => lock => rename)
     my $id = $self->worker_id->();
-    if ($self->{fh} && $self->{id_for_fh} != $id) {
+    if ($self->{fh} && $self->{id_for_fh} ne $id) {
         # fork? close but do not unlock
         close $self->{fh};
         undef $self->{fh};
