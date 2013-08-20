@@ -8,7 +8,7 @@ use Fcntl qw(:flock);
 use IO::Handle;
 use POSIX qw(:fcntl_h);
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use Class::Accessor::Lite (
     ro => [ qw(base_dir worker_id) ],

@@ -1,5 +1,9 @@
 Revision history for Perl extension Parallel::Scoreboard
 
+0.04
+	fix seek error (thanks to hirose31)
+	support non-numeric ids (thanks to hirose31)
+
 0.03
 	added callback "worker_id" that can be used for distiguishing workers other than using pids
 
