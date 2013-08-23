@@ -1,15 +1,15 @@
-Revision history for Perl extension Parallel::Scoreboard
+Revision history for Perl module Parallel::Scoreboard
 
-0.04
-	fix seek error (thanks to hirose31)
-	support non-numeric ids (thanks to hirose31)
+0.04 2013-08-19
+ - fix seek error (thanks to hirose31)
+ - support non-numeric ids (thanks to hirose31)
 
-0.03
-	added callback "worker_id" that can be used for distiguishing workers other than using pids
+0.03 2011-01-24
+ - added callback "worker_id" that can be used for distiguishing workers other than using pids
 
-0.02
-	fix incompatibility with Solaris (LOCK_EX not possible on read-only file handles)
-	scripts may now call fork(2) after calling Parallel::Scoreboard::update()
+0.02 2010-07-04
+ - fix incompatibility with Solaris (LOCK_EX not possible on read-only file handles)
+ - scripts may now call fork(2) after calling Parallel::Scoreboard::update()
 
-0.01
-	initial release
+0.01 2010-07-02
+ - initial release
