@@ -128,7 +128,9 @@ sub _for_all {
             # the owner has died, remove status file
             close $fh;
             unlink $fn
-                or warn "failed to remove an obsolete scoreboard file:$fn:$!";
+                or
+                    not $!{ENOENT} and
+                    warn "failed to remove an obsolete scoreboard file:$fn:$!";
             next;
         }
         # invoke
