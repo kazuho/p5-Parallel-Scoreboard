@@ -1,4 +1,5 @@
 Revision history for Perl module Parallel::Scoreboard
+ - fixed a warning that could occur during global destruction when an attribute in the scoreboard object was destroyed before the object itself (Dave Rolsky)
 
 0.05 2014-04-09
  - when cleaning up obsolete scoreboard files, ignore errors when another process cleaned up the file at the same time (Karen Etheridge)
