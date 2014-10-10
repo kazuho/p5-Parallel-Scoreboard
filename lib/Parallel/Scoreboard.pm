@@ -40,8 +40,11 @@ sub DESTROY {
     # if file is open, close and unlink
     if ($self->{fh}) {
         close $self->{fh};
-        my $fn = $self->_build_filename();
-        unlink $fn;
+        # during global destruction we may already have lost this
+        if ($self->{base_dir}) {
+            my $fn = $self->_build_filename();
+            unlink $fn;
+        }
     }
 }
 
