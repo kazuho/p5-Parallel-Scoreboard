@@ -41,10 +41,7 @@ sub DESTROY {
     if ($self->{fh}) {
         close $self->{fh};
         # during global destruction we may already have lost this
-        if ($self->{base_dir}) {
-            my $fn = $self->_build_filename();
-            unlink $fn;
-        }
+	unlink $self->_build_filename() if ($self->{base_dir});
     }
 }
 
