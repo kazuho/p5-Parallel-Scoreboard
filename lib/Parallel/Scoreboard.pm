@@ -7,6 +7,7 @@ use Digest::MD5 qw(md5);
 use Fcntl qw(:flock);
 use IO::Handle;
 use POSIX qw(:fcntl_h);
+use File::Path;
 
 our $VERSION = '0.05';
 
@@ -21,7 +22,7 @@ sub new {
         unless $args{base_dir};
     # create base_dir if necessary
     if (! -e $args{base_dir}) {
-        mkdir $args{base_dir}
+	mkpath $args{base_dir}
             or die "failed to create directory:$args{base_dir}:$!";
     }
     # build object
@@ -41,10 +42,7 @@ sub DESTROY {
     if ($self->{fh}) {
         close $self->{fh};
         # during global destruction we may already have lost this
-        if ($self->{base_dir}) {
-            my $fn = $self->_build_filename();
-            unlink $fn;
-        }
+	unlink $self->_build_filename() if ($self->{base_dir});
     }
 }
 
