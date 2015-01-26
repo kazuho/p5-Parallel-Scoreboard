@@ -9,7 +9,7 @@ use IO::Handle;
 use POSIX qw(:fcntl_h);
 use File::Path;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use Class::Accessor::Lite (
     ro => [ qw(base_dir worker_id) ],
