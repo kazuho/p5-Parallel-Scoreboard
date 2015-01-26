@@ -4,19 +4,9 @@ use warnings;
 use File::Temp qw(tempdir);
 
 use Test::More;
+use Test::Warn;
 
-my $has_test_warn = do {
-    local $@;
-    eval 'use Test::Warn';
-    1;
-};
-
-if ($has_test_warn) {
-    plan tests => 2;
-}
-else {
-    plan skip_all => 'These tests require Test::Warn';
-}
+plan tests => 2;
 
 use_ok('Parallel::Scoreboard');
 
