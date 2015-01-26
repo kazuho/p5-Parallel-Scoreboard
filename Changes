@@ -1,5 +1,8 @@
 Revision history for Perl module Parallel::Scoreboard
 
+0.07 2015-01-26
+ - do not include MYMETA.* in the distribution
+
 0.06 2015-01-26
  - create workspace directory by using mkpath instead of mkdir (tolid)
  - fixed a warning that could occur during global destruction when an attribute in the scoreboard object was destroyed before the object itself (Dave Rolsky)
