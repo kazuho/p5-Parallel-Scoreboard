@@ -20,11 +20,14 @@ sub new {
     my %args = @_;
     die 'mandatory parameter:base_dir is missing'
         unless $args{base_dir};
+    die "directory $args{base_dir} exists and is not a directory!" 
+    	if ( -e $args{base_dir} && ! -d $args{base_dir} );
     # create base_dir if necessary
-    if (! -e $args{base_dir}) {
+    if (! -d $args{base_dir}) {
 	mkpath $args{base_dir}
             or die "failed to create directory:$args{base_dir}:$!";
     }
+
     # build object
     my $self = bless {
         worker_id => sub { $$ },
