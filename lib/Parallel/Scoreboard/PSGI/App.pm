@@ -12,7 +12,7 @@ Class::Accessor::Lite->mk_accessors(qw(scoreboard));
 sub new {
     my $klass = shift;
     my %args = @_;
-    die "mandatory parameter:scoreboard is missing"
+    die 'andatory parameter:scoreboard is missing'
         unless $args{scoreboard};
     # build object
     my $self = bless {

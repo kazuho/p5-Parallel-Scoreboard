@@ -18,7 +18,7 @@ use Class::Accessor::Lite (
 sub new {
     my $klass = shift;
     my %args = @_;
-    die "mandatory parameter:base_dir is missing"
+    die 'mandatory parameter:base_dir is missing'
         unless $args{base_dir};
     # create base_dir if necessary
     if (! -e $args{base_dir}) {
