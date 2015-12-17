@@ -28,9 +28,16 @@ sub new {
             or die "failed to create directory:$args{base_dir}:$!";
     }
 
+    if ( ! exists( $args{worker_id} ) || ref($args{worker_id}) ne 'CODE' ){
+	$args{worker_id} = sub{ $$ };
+    }
+    
+
     # build object
     my $self = bless {
-        worker_id => sub { $$ },
+        # worker_id => ( $args{worker_id} && ref($args{worker_id}) eq 'CODE'
+	# 	       ? $args{worker_id}
+	# 	       : sub{ $$ } ),
         %args,
     }, $klass;
     # remove my status file, just in case
@@ -191,7 +198,8 @@ the directory name in which the scoreboard files will be stored.  The directory 
 
 =head3 worker_id => sub { ... }
 
-a subref that returns the id of the worker (if omitted, the module uses $$ (process id) to distinguish between the workers)
+a subref that returns the id of the worker (if omitted, the module uses $$ (process id) to distinguish between the workers).
+Please note that if the worker_id is not a code reference the module will automatically use the $$ value.
 
 =head2 update($status)
 
