@@ -187,7 +187,7 @@ instantiation.  Recognizes the following paramaters.  The parameters can be read
 
 =head3 base_dir => $base_dir
 
-the directory name in which the scoreboard files will be stored.  The directory will be created if it does not exist already.  Mandatory parameter.
+the directory name in which the scoreboard files will be stored.  The directory will be created if it does not exist already.  Mandatory parameter. This parameter is mandatory and must contain a name of an existing directory or a directory that will be created on demand.
 
 =head3 worker_id => sub { ... }
 
@@ -195,7 +195,7 @@ a subref that returns the id of the worker (if omitted, the module uses $$ (proc
 
 =head2 update($status)
 
-saves the status of the process
+saves the status of the process. The status is saved as a three-field tuple containing an hash (md5) of the status data, the lenght of such data and the data itself.
 
 =head2 read_all()
 
