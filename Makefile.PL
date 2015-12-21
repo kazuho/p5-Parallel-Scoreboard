@@ -13,8 +13,6 @@ requires 'JSON';
 test_requires 'File::Temp';
 test_requires 'Test::More';
 test_requires 'Test::Warn';
-use_test_base;
-auto_include;
 
 repository 'https://github.com/kazuho/p5-Parallel-Scoreboard';
 
