@@ -1,4 +1,4 @@
-use inc::Module::Install;
+{use inc::Module::Install;}
 
 name 'Parallel-Scoreboard';
 all_from 'lib/Parallel/Scoreboard.pm';

@@ -18,16 +18,26 @@ use Class::Accessor::Lite (
 sub new {
     my $klass = shift;
     my %args = @_;
-    die "mandatory parameter:base_dir is missing"
+    die 'mandatory parameter:base_dir is missing'
         unless $args{base_dir};
+    die "directory $args{base_dir} exists and is not a directory!" 
+    	if ( -e $args{base_dir} && ! -d $args{base_dir} );
     # create base_dir if necessary
-    if (! -e $args{base_dir}) {
+    if (! -d $args{base_dir}) {
 	mkpath $args{base_dir}
             or -e $args{base_dir} or die "failed to create directory:$args{base_dir}:$!";
     }
+
+    if ( ! exists( $args{worker_id} ) || ref($args{worker_id}) ne 'CODE' ){
+	$args{worker_id} = sub{ $$ };
+    }
+    
+
     # build object
     my $self = bless {
-        worker_id => sub { $$ },
+        # worker_id => ( $args{worker_id} && ref($args{worker_id}) eq 'CODE'
+	# 	       ? $args{worker_id}
+	# 	       : sub{ $$ } ),
         %args,
     }, $klass;
     # remove my status file, just in case
@@ -184,15 +194,16 @@ instantiation.  Recognizes the following paramaters.  The parameters can be read
 
 =head3 base_dir => $base_dir
 
-the directory name in which the scoreboard files will be stored.  The directory will be created if it does not exist already.  Mandatory parameter.
+the directory name in which the scoreboard files will be stored.  The directory will be created if it does not exist already.  Mandatory parameter. This parameter is mandatory and must contain a name of an existing directory or a directory that will be created on demand.
 
 =head3 worker_id => sub { ... }
 
-a subref that returns the id of the worker (if omitted, the module uses $$ (process id) to distinguish between the workers)
+a subref that returns the id of the worker (if omitted, the module uses $$ (process id) to distinguish between the workers).
+Please note that if the worker_id is not a code reference the module will automatically use the $$ value.
 
 =head2 update($status)
 
-saves the status of the process
+saves the status of the process. The status is saved as a three-field tuple containing an hash (md5) of the status data, the lenght of such data and the data itself.
 
 =head2 read_all()
 
