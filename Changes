@@ -1,5 +1,9 @@
 Revision history for Perl module Parallel::Scoreboard
 
+0.08 2016-12-12
+ - do not report failure if temporary directory is created by another process #11
+ - do not call `use_test_base` #10
+
 0.07 2015-01-26
  - do not include MYMETA.* in the distribution
 
