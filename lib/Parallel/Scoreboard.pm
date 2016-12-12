@@ -23,7 +23,7 @@ sub new {
     # create base_dir if necessary
     if (! -e $args{base_dir}) {
 	mkpath $args{base_dir}
-            or die "failed to create directory:$args{base_dir}:$!";
+            or -e $args{base_dir} or die "failed to create directory:$args{base_dir}:$!";
     }
     # build object
     my $self = bless {
